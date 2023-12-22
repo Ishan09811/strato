@@ -11,7 +11,7 @@
 	android:paddingHorizontal="16.0dip" 
 	android:paddingVertical="8.0dip">
 	<com.google.android.material.card.MaterialCardView 
-		android:id="@id/card_game" 
+		android:id="@+id/card_game" 
 		android:background="?selectableItemBackground" 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" 
@@ -19,7 +19,7 @@
 		app:cardCornerRadius="8.0dip" 
 		style="?materialCardViewOutlinedStyle">
 		<androidx.constraintlayout.widget.ConstraintLayout 
-			android:id="@id/constraint_fix_layout" 
+			android:id="@+id/constraint_fix_layout" 
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content" 
 			android:paddingHorizontal="16.0dip" 
