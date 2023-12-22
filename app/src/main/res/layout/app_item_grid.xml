@@ -1,9 +1,62 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical" android:id="@id/item_click_layout" android:background="@drawable/shape" android:focusable="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="15.0dip" android:layout_marginTop="15.0dip" android:foreground="@drawable/rounded_selectable_item_background" android:elevation="20.0dip">
-	<com.google.android.material.card.MaterialCardView android:id="@id/item_card" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="10.0dip" app:shapeAppearance="?shapeAppearanceCornerLarge" style="@style/Widget.Material3.CardView.Elevated">
-		<ImageView android:id="@id/icon" android:layout_width="fill_parent" android:layout_height="wrap_content" android:adjustViewBounds="true" android:contentDescription="@string/icon" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+	xmlns:app="http://schemas.android.com/apk/res-auto" 
+	android:orientation="vertical" 
+	android:id="@id/item_click_layout" 
+	android:background="@drawable/shape" 
+	android:focusable="true" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:layout_marginLeft="15.0dip" 
+	android:layout_marginTop="15.0dip" 
+	android:foreground="@drawable/rounded_selectable_item_background" 
+	android:elevation="20.0dip">
+	<com.google.android.material.card.MaterialCardView 
+		android:id="@id/item_card" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:layout_margin="10.0dip" 
+		app:shapeAppearance="?shapeAppearanceCornerLarge" 
+		style="@style/Widget.Material3.CardView.Elevated">
+		<ImageView 
+			android:id="@id/icon" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:adjustViewBounds="true" 
+			android:contentDescription="@string/icon" />
 	</com.google.android.material.card.MaterialCardView>
-	<TextView android:textColor="#ff01a4cc" android:ellipsize="marquee" android:id="@id/text_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:marqueeRepeatLimit="marquee_forever" android:layout_marginStart="10.0dip" android:layout_marginEnd="10.0dip" style="?textAppearanceTitleSmall" />
-	<TextView android:textColor="#fffa3722" android:ellipsize="marquee" android:id="@id/text_version" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:marqueeRepeatLimit="marquee_forever" android:layout_marginStart="10.0dip" android:layout_marginEnd="10.0dip" style="?textAppearanceBodySmall" />
-	<TextView android:textColor="#ff1db0ea" android:ellipsize="marquee" android:id="@id/text_author" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:singleLine="true" android:marqueeRepeatLimit="marquee_forever" android:layout_marginStart="10.0dip" android:layout_marginEnd="10.0dip" style="?textAppearanceBodySmall" />
+	<TextView 
+		android:textColor="#ff01a4cc" 
+		android:ellipsize="marquee" 
+		android:id="@id/text_title" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:singleLine="true" 
+		android:marqueeRepeatLimit="marquee_forever" 
+		android:layout_marginStart="10.0dip" 
+		android:layout_marginEnd="10.0dip" 
+		style="?textAppearanceTitleSmall" />
+	<TextView 
+	        android:textColor="#fffa3722" 
+		android:ellipsize="marquee" 
+		android:id="@id/text_version" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:singleLine="true" 
+		android:marqueeRepeatLimit="marquee_forever" 
+		android:layout_marginStart="10.0dip" 
+		android:layout_marginEnd="10.0dip" 
+		style="?textAppearanceBodySmall" />
+	<TextView 
+		android:textColor="#ff1db0ea" 
+		android:ellipsize="marquee" 
+		android:id="@id/text_author" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:layout_marginBottom="10.0dip" 
+		android:singleLine="true" 
+		android:marqueeRepeatLimit="marquee_forever" 
+		android:layout_marginStart="10.0dip" 
+		android:layout_marginEnd="10.0dip" 
+		style="?textAppearanceBodySmall" />
 </LinearLayout>
