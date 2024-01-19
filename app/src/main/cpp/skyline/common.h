@@ -32,7 +32,7 @@ namespace skyline {
     namespace cpu {
     class CPU;
     }
-    }
+
     namespace gpu {
         class GPU;
     }
