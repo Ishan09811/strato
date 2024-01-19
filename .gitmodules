@@ -62,6 +62,3 @@
 [submodule "app/libraries/audio-core"]
 	path = app/libraries/audio-core
 	url = https://github.com/skyline-emu/audio-core
-[submodule "app/libraries/dynarmic"]
-	path = app/libraries/dynarmic
-	url = https://github.com/strato-emu/dynarmic
