@@ -130,6 +130,12 @@ add_subdirectory("libraries/audio-core")
 include_directories(SYSTEM "libraries/audio-core/include")
 target_link_libraries_system(audio_core Boost::intrusive Boost::container range-v3)
 
+# Dynarmic
+set(DYNARMIC_FRONTENDS "A32" CACHE STRING "Enabled Dynarmic frontends")
+set(DYNARMIC_INSTALL OFF CACHE BOOL "Skip Dynarmic installation")
+add_subdirectory("libraries/dynarmic")
+target_include_directories(dynarmic PUBLIC "libraries/dynarmic/src")
+
 
 
 
@@ -407,5 +413,5 @@ target_compile_options(skyline PRIVATE -Wall -Wno-unknown-attributes -Wno-c++20-
 
 
 
-target_link_libraries(skyline PRIVATE shader_recompiler audio_core)
+target_link_libraries(skyline PRIVATE shader_recompiler audio_core dynarmic)
 target_link_libraries_system(skyline android perfetto fmt lz4_static tzcode vkma mbedcrypto opus Boost::intrusive Boost::container Boost::preprocessor range-v3 adrenotools tsl::robin_map)
