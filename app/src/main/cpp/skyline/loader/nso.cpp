@@ -65,4 +65,45 @@ namespace skyline::loader {
         state.process->memory.InitializeRegions(span<u8>{loadInfo.base, loadInfo.size});
         return loadInfo.entry;
     }
+    void NsoLoader::PrintRoContentsInfo(const std::vector<u8> &contents) {
+        const boost::regex moduleRegex(R"([a-z]:[\\/][ -~]{5,}\.nss)", boost::regex::icase);
+        const boost::regex fsSdkRegex("sdk_version: ([0-9.]*)");
+        const boost::regex sdkMwRegex("SDK MW[ -~]*");
+
+        std::string contentsRaw(contents.begin(), contents.end());
+        std::string modulePath;
+        if (memcmp(&contents[0], "\x00\x00\x00\x00", 4) == 0) {
+            i32 length;
+            std::memcpy(&length, &contents[4], sizeof(i32));
+
+            if (length > 0)
+                modulePath = reinterpret_cast<const char *>(&contents[4 + sizeof(i32)]);
+        }
+
+        if (modulePath.empty()) {
+            boost::smatch moduleMatch;
+            if (boost::regex_search(contentsRaw, moduleMatch, moduleRegex))
+                modulePath = moduleMatch.str();
+        }
+
+        LOGI("Module Path: {}", modulePath);
+
+        boost::smatch fsSdkMatch;
+        if (boost::regex_search(contentsRaw, fsSdkMatch, fsSdkRegex))
+            LOGI("SDK Version: {}", fsSdkMatch[1].str());
+
+        boost::sregex_iterator sdkMwMatchesBegin(contentsRaw.begin(), contentsRaw.end(), sdkMwRegex);
+        boost::sregex_iterator sdkMwMatchesEnd;
+
+        if (sdkMwMatchesBegin != sdkMwMatchesEnd) {
+            std::string libContent;
+
+            while (sdkMwMatchesBegin != sdkMwMatchesEnd) {
+                libContent += sdkMwMatchesBegin->str() + "\n";
+                sdkMwMatchesBegin++;
+            }
+
+            LOGI("SDK Libraries: {}", libContent);
+        }
+    }
 }
