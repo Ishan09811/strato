@@ -4,6 +4,7 @@
 #include <lz4.h>
 #include <nce.h>
 #include <kernel/types/KProcess.h>
+#include <boost/regex/v5/regex.hpp>
 #include "nso.h"
 
 namespace skyline::loader {
@@ -55,6 +56,8 @@ namespace skyline::loader {
             executable.dynsym = {header.dynsym.offset, header.dynsym.size};
             executable.dynstr = {header.dynstr.offset, header.dynstr.size};
         }
+
+        PrintRoContentsInfo(executable.ro.contents);
 
         return loader->LoadExecutable(process, state, executable, offset, name, dynamicallyLinked);
     }
