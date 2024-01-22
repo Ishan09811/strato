@@ -13,7 +13,7 @@ namespace skyline::cpu {
       public:
         CPU(DeviceState &state);
 
-        std::array<jit::Jit32, constant::CoreCount> jit_cores;
+        std::array<jit::Jit32, constant::CoreCount> jitCores;
 
       private:
         DeviceState &state;

@@ -6,5 +6,5 @@
 namespace skyline::cpu {
     CPU::CPU(DeviceState &state)
         : state{state},
-          jit_cores{jit::Jit32(state, 0), jit::Jit32(state, 1), jit::Jit32(state, 2), jit::Jit32(state, 3)} {}
+          jitCores{jit::Jit32(state, 0), jit::Jit32(state, 1), jit::Jit32(state, 2), jit::Jit32(state, 3)} {}
 }
