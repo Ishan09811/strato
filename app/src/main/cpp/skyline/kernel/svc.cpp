@@ -1218,7 +1218,8 @@ namespace skyline::kernel::svc {
             auto &context{*reinterpret_cast<ThreadContext *>(ctx.x0)};
             context = {}; // Zero-initialize the contents of the context as not all fields are set
 
-            auto &targetContext{thread->ctx};
+            // https://github.com/Ryujinx/Ryujinx/blob/bebd8eb8223ba888b272e42967dc408102e99de1/src/Ryujinx.HLE/HOS/Kernel/Threading/KThread.cs#L657
+            auto &targetContext{static_pointer_cast<type::KNceThread>(thread)->ctx};
             for (size_t i{}; i < targetContext.gpr.regs.size(); i++)
                 context.gpr[i] = targetContext.gpr.regs[i];
 
