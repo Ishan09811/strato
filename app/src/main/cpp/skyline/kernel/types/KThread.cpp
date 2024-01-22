@@ -35,7 +35,7 @@ namespace skyline::kernel::type {
             timer_delete(preemptionTimer);
     }
 
-    void KThread::StartThreadNce() {
+    void KThread::ThreadEntrypoint() {
         pthread = pthread_self();
         std::array<char, 16> threadName{};
         if (int result{pthread_getname_np(pthread, threadName.data(), threadName.size())})
@@ -48,10 +48,6 @@ namespace skyline::kernel::type {
         if (!tlsRegion)
             tlsRegion = parent->AllocateTlsSlot();
 
-        ctx.tpidrroEl0 = tlsRegion;
-
-        ctx.state = &state;
-        state.ctx = &ctx;
         state.thread = shared_from_this();
 
         if (setjmp(originalCtx)) { // Returns 1 if it's returning from guest, 0 otherwise
@@ -66,6 +62,7 @@ namespace skyline::kernel::type {
 
             Signal();
 
+            // Restore the previous thread name if any
             if (threadName[0] != 'H' || threadName[1] != 'O' || threadName[2] != 'S' || threadName[3] != '-') {
                 if (int result{pthread_setname_np(pthread, threadName.data())})
                     LOGW("Failed to set the thread name: {}", strerror(result));
@@ -83,12 +80,6 @@ namespace skyline::kernel::type {
         if (timer_create(CLOCK_THREAD_CPUTIME_ID, &event, &preemptionTimer))
             throw exception("timer_create has failed with '{}'", strerror(errno));
 
-        {
-            std::scoped_lock lock{statusMutex};
-            ready = true;
-            statusCondition.notify_all();
-        }
-
         try {
             if (!Scheduler::YieldPending)
                 state.scheduler->WaitSchedule();
@@ -101,86 +92,7 @@ namespace skyline::kernel::type {
 
             TRACE_EVENT_BEGIN("guest", "Guest");
 
-            asm volatile(
-            "MRS X0, TPIDR_EL0\n\t"
-            "MSR TPIDR_EL0, %x0\n\t" // Set TLS to ThreadContext
-            "STR X0, [%x0, #0x2A0]\n\t" // Write ThreadContext::hostTpidrEl0
-            "MOV X0, SP\n\t"
-            "STR X0, [%x0, #0x2A8]\n\t" // Write ThreadContext::hostSp
-            "MOV SP, %x1\n\t" // Replace SP with guest stack
-            "MOV LR, %x2\n\t" // Store entry in Link Register so it's jumped to on return
-            "MOV X0, %x3\n\t" // Store the argument in X0
-            "MOV X1, %x4\n\t" // Store the thread handle in X1, NCA applications require this
-            "MOV X2, XZR\n\t" // Zero out other GP and SIMD registers, not doing this will break applications
-            "MOV X3, XZR\n\t"
-            "MOV X4, XZR\n\t"
-            "MOV X5, XZR\n\t"
-            "MOV X6, XZR\n\t"
-            "MOV X7, XZR\n\t"
-            "MOV X8, XZR\n\t"
-            "MOV X9, XZR\n\t"
-            "MOV X10, XZR\n\t"
-            "MOV X11, XZR\n\t"
-            "MOV X12, XZR\n\t"
-            "MOV X13, XZR\n\t"
-            "MOV X14, XZR\n\t"
-            "MOV X15, XZR\n\t"
-            "MOV X16, XZR\n\t"
-            "MOV X17, XZR\n\t"
-            "MOV X18, XZR\n\t"
-            "MOV X19, XZR\n\t"
-            "MOV X20, XZR\n\t"
-            "MOV X21, XZR\n\t"
-            "MOV X22, XZR\n\t"
-            "MOV X23, XZR\n\t"
-            "MOV X24, XZR\n\t"
-            "MOV X25, XZR\n\t"
-            "MOV X26, XZR\n\t"
-            "MOV X27, XZR\n\t"
-            "MOV X28, XZR\n\t"
-            "MOV X29, XZR\n\t"
-            "MSR FPSR, XZR\n\t"
-            "MSR FPCR, XZR\n\t"
-            "MSR NZCV, XZR\n\t"
-            "DUP V0.16B, WZR\n\t"
-            "DUP V1.16B, WZR\n\t"
-            "DUP V2.16B, WZR\n\t"
-            "DUP V3.16B, WZR\n\t"
-            "DUP V4.16B, WZR\n\t"
-            "DUP V5.16B, WZR\n\t"
-            "DUP V6.16B, WZR\n\t"
-            "DUP V7.16B, WZR\n\t"
-            "DUP V8.16B, WZR\n\t"
-            "DUP V9.16B, WZR\n\t"
-            "DUP V10.16B, WZR\n\t"
-            "DUP V11.16B, WZR\n\t"
-            "DUP V12.16B, WZR\n\t"
-            "DUP V13.16B, WZR\n\t"
-            "DUP V14.16B, WZR\n\t"
-            "DUP V15.16B, WZR\n\t"
-            "DUP V16.16B, WZR\n\t"
-            "DUP V17.16B, WZR\n\t"
-            "DUP V18.16B, WZR\n\t"
-            "DUP V19.16B, WZR\n\t"
-            "DUP V20.16B, WZR\n\t"
-            "DUP V21.16B, WZR\n\t"
-            "DUP V22.16B, WZR\n\t"
-            "DUP V23.16B, WZR\n\t"
-            "DUP V24.16B, WZR\n\t"
-            "DUP V25.16B, WZR\n\t"
-            "DUP V26.16B, WZR\n\t"
-            "DUP V27.16B, WZR\n\t"
-            "DUP V28.16B, WZR\n\t"
-            "DUP V29.16B, WZR\n\t"
-            "DUP V30.16B, WZR\n\t"
-            "DUP V31.16B, WZR\n\t"
-            "RET"
-            :
-            : "r"(&ctx), "r"(stackTop), "r"(entry), "r"(entryArgument), "r"(handle)
-            : "x0", "x1", "lr"
-            );
-
-            __builtin_unreachable();
+            Run();
         } catch (const std::exception &e) {
             LOGE("{}", e.what());
             if (id) {
@@ -202,29 +114,6 @@ namespace skyline::kernel::type {
         }
     }
 
-    void KThread::StartThreadJit32() {
-        ctx32.gpr[0] = static_cast<u32>(entryArgument);
-        ctx32.gpr[1] = handle;
-
-        ctx32.sp = static_cast<u32>(reinterpret_cast<uintptr_t>(stackTop));
-        ctx32.pc = static_cast<u32>(reinterpret_cast<uintptr_t>(entry));
-
-        if (!tlsRegion)
-            tlsRegion = parent->AllocateTlsSlot();
-
-        auto &jit_core{state.cpu->jit_cores[coreId]};
-        jit_core.RestoreContext(ctx32);
-        jit_core.SetTlsPointer(static_cast<u32>(reinterpret_cast<uintptr_t>(tlsRegion)));
-        jit_core.Run();
-    }
-
-    void KThread::StartThread() {
-        if (state.process->npdm.meta.flags.is64Bit)
-            StartThreadNce();
-        else
-            StartThreadJit32();
-    }
-
     void KThread::Start(bool self) {
         std::unique_lock lock(statusMutex);
         if (!running) {
@@ -240,9 +129,9 @@ namespace skyline::kernel::type {
             statusCondition.notify_all();
             if (self) {
                 lock.unlock();
-                StartThread();
+                ThreadEntrypoint();
             } else {
-                thread = std::thread(&KThread::StartThread, this);
+                thread = std::thread(&KThread::ThreadEntrypoint, this);
             }
         }
     }
@@ -358,5 +247,104 @@ namespace skyline::kernel::type {
                 break;
             }
         }
+    }
+
+    void KNceThread::Run() {
+        ctx.tpidrroEl0 = tlsRegion;
+        ctx.state = &state;
+
+        asm volatile(
+            "MRS X0, TPIDR_EL0\n\t"
+            "MSR TPIDR_EL0, %x0\n\t" // Set TLS to ThreadContext
+            "STR X0, [%x0, #0x2A0]\n\t" // Write ThreadContext::hostTpidrEl0
+            "MOV X0, SP\n\t"
+            "STR X0, [%x0, #0x2A8]\n\t" // Write ThreadContext::hostSp
+            "MOV SP, %x1\n\t" // Replace SP with guest stack
+            "MOV LR, %x2\n\t" // Store entry in Link Register so it's jumped to on return
+            "MOV X0, %x3\n\t" // Store the argument in X0
+            "MOV X1, %x4\n\t" // Store the thread handle in X1, NCA applications require this
+            "MOV X2, XZR\n\t" // Zero out other GP and SIMD registers, not doing this will break applications
+            "MOV X3, XZR\n\t"
+            "MOV X4, XZR\n\t"
+            "MOV X5, XZR\n\t"
+            "MOV X6, XZR\n\t"
+            "MOV X7, XZR\n\t"
+            "MOV X8, XZR\n\t"
+            "MOV X9, XZR\n\t"
+            "MOV X10, XZR\n\t"
+            "MOV X11, XZR\n\t"
+            "MOV X12, XZR\n\t"
+            "MOV X13, XZR\n\t"
+            "MOV X14, XZR\n\t"
+            "MOV X15, XZR\n\t"
+            "MOV X16, XZR\n\t"
+            "MOV X17, XZR\n\t"
+            "MOV X18, XZR\n\t"
+            "MOV X19, XZR\n\t"
+            "MOV X20, XZR\n\t"
+            "MOV X21, XZR\n\t"
+            "MOV X22, XZR\n\t"
+            "MOV X23, XZR\n\t"
+            "MOV X24, XZR\n\t"
+            "MOV X25, XZR\n\t"
+            "MOV X26, XZR\n\t"
+            "MOV X27, XZR\n\t"
+            "MOV X28, XZR\n\t"
+            "MOV X29, XZR\n\t"
+            "MSR FPSR, XZR\n\t"
+            "MSR FPCR, XZR\n\t"
+            "MSR NZCV, XZR\n\t"
+            "DUP V0.16B, WZR\n\t"
+            "DUP V1.16B, WZR\n\t"
+            "DUP V2.16B, WZR\n\t"
+            "DUP V3.16B, WZR\n\t"
+            "DUP V4.16B, WZR\n\t"
+            "DUP V5.16B, WZR\n\t"
+            "DUP V6.16B, WZR\n\t"
+            "DUP V7.16B, WZR\n\t"
+            "DUP V8.16B, WZR\n\t"
+            "DUP V9.16B, WZR\n\t"
+            "DUP V10.16B, WZR\n\t"
+            "DUP V11.16B, WZR\n\t"
+            "DUP V12.16B, WZR\n\t"
+            "DUP V13.16B, WZR\n\t"
+            "DUP V14.16B, WZR\n\t"
+            "DUP V15.16B, WZR\n\t"
+            "DUP V16.16B, WZR\n\t"
+            "DUP V17.16B, WZR\n\t"
+            "DUP V18.16B, WZR\n\t"
+            "DUP V19.16B, WZR\n\t"
+            "DUP V20.16B, WZR\n\t"
+            "DUP V21.16B, WZR\n\t"
+            "DUP V22.16B, WZR\n\t"
+            "DUP V23.16B, WZR\n\t"
+            "DUP V24.16B, WZR\n\t"
+            "DUP V25.16B, WZR\n\t"
+            "DUP V26.16B, WZR\n\t"
+            "DUP V27.16B, WZR\n\t"
+            "DUP V28.16B, WZR\n\t"
+            "DUP V29.16B, WZR\n\t"
+            "DUP V30.16B, WZR\n\t"
+            "DUP V31.16B, WZR\n\t"
+            "RET"
+            :
+            : "r"(&ctx), "r"(stackTop), "r"(entry), "r"(entryArgument), "r"(handle)
+            : "x0", "x1", "lr"
+            );
+
+        __builtin_unreachable();
+    }
+
+    void KJit32Thread::Run() {
+        ctx.gpr[0] = static_cast<u32>(entryArgument);
+        ctx.gpr[1] = handle;
+
+        ctx.sp = static_cast<u32>(reinterpret_cast<uintptr_t>(stackTop));
+        ctx.pc = static_cast<u32>(reinterpret_cast<uintptr_t>(entry));
+
+        auto &jit{state.cpu->jitCores[coreId]};
+        jit.RestoreContext(ctx);
+        jit.SetTlsPointer(static_cast<u32>(reinterpret_cast<uintptr_t>(tlsRegion)));
+        jit.Run();
     }
 }

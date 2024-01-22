@@ -20,7 +20,8 @@ namespace skyline::jit {
         Step = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::Step),
         CacheInvalidation = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::CacheInvalidation),
         MemoryAbort = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::MemoryAbort),
-        Preempted = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::UserDefined1)
+        Svc = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::UserDefined1),
+        Preempted = static_cast<DynarmicHaltReasonType>(Dynarmic::HaltReason::UserDefined2)
     };
 
     inline std::string to_string(HaltReason hr) {
@@ -31,6 +32,8 @@ namespace skyline::jit {
                 return "CacheInvalidation";
             case HaltReason::MemoryAbort:
                 return "MemoryAbort";
+            case HaltReason::Svc:
+                return "Svc";
             case HaltReason::Preempted:
                 return "Preempted";
             default:
@@ -38,14 +41,14 @@ namespace skyline::jit {
         }
     }
 
-    inline std::string to_string(Dynarmic::HaltReason hr) {
-        return to_string(static_cast<HaltReason>(hr));
+    inline std::string to_string(Dynarmic::HaltReason dhr) {
+        return to_string(static_cast<HaltReason>(dhr));
     }
 
     /**
      * @brief Converts a HaltReason to a Dynarmic::HaltReason
      */
-    inline Dynarmic::HaltReason ToDynarmicHaltReason(HaltReason reason) {
-        return static_cast<Dynarmic::HaltReason>(reason);
+    inline Dynarmic::HaltReason ToDynarmicHaltReason(HaltReason hr) {
+        return static_cast<Dynarmic::HaltReason>(hr);
     }
 }

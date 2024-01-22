@@ -7,23 +7,33 @@
 #include "jit32.h"
 
 namespace skyline::jit {
-    Jit32::Jit32(DeviceState &state, u32 core_id) : state{state}, core_id{core_id}, jit{MakeJit()} {}
+    Jit32::Jit32(const DeviceState &state, u32 coreId) : state{state}, coreId{coreId}, jit{MakeJit()} {}
 
     Dynarmic::A32::Jit Jit32::MakeJit() {
-        using namespace Dynarmic::A32;
-        UserConfig config;
+        Dynarmic::A32::UserConfig config;
 
         config.callbacks = this;
-        config.processor_id = core_id;
+        config.processor_id = coreId;
 
         config.enable_cycle_counting = false;
 
-        return Jit{config};
+        return Dynarmic::A32::Jit{config};
     }
 
     void Jit32::Run() {
-        auto haltReason{jit.Run()};
-        LOGE("JIT halted: {}", to_string(haltReason));
+        auto haltReason{static_cast<HaltReason>(jit.Run())};
+        ClearHalt(haltReason);
+
+        switch (haltReason) {
+            case HaltReason::Svc: {
+                SvcHandler(lastSwi);
+                break;
+            }
+
+            default:
+                LOGE("JIT halted: {}", to_string(haltReason));
+                break;
+        }
     }
 
     void Jit32::HaltExecution(HaltReason hr) {
@@ -65,11 +75,11 @@ namespace skyline::jit {
             jitRegs[i] = static_cast<u32>(svcCtx.regs[i]);
     }
 
-    void Jit32::SetThreadPointer(u32 thread_ptr) {
+    void Jit32::SetThreadPointer(u32 threadPtr) {
         // TODO: implement coprocessor 15
     }
 
-    void Jit32::SetTlsPointer(u32 tls_ptr) {
+    void Jit32::SetTlsPointer(u32 tlsPtr) {
         // TODO: implement coprocessor 15
     }
 
@@ -95,6 +105,18 @@ namespace skyline::jit {
 
     void Jit32::SetRegister(u32 reg, u32 value) {
         jit.Regs()[reg] = value;
+    }
+
+    void Jit32::SvcHandler(u32 swi) {
+        auto svc{kernel::svc::SvcTable[swi]};
+        if (svc) [[likely]] {
+            TRACE_EVENT("kernel", perfetto::StaticString{svc.name});
+            auto svcContext = MakeSvcContext();
+            (svc.function)(state, svcContext);
+            ApplySvcContext(svcContext);
+        } else {
+            throw exception("Unimplemented SVC 0x{:X}", swi);
+        }
     }
 
     template<typename T>
@@ -167,27 +189,14 @@ namespace skyline::jit {
         MemoryWrite<u64>(vaddr, value);
     }
 
-    void Jit32::InterpreterFallback(u32 pc, size_t num_instructions) {
+    void Jit32::InterpreterFallback(u32 pc, size_t numInstructions) {
         // This is never called in practice.
         state.process->Kill(false, true);
     }
 
     void Jit32::CallSVC(u32 swi) {
-        auto svc{kernel::svc::SvcTable[swi]};
-        if (svc) [[likely]] {
-            TRACE_EVENT("kernel", perfetto::StaticString{svc.name});
-            auto svcContext = MakeSvcContext();
-            (svc.function)(state, svcContext);
-            ApplySvcContext(svcContext);
-        } else {
-            throw exception("Unimplemented SVC 0x{:X}", swi);
-        }
-
-        while (kernel::Scheduler::YieldPending) [[unlikely]] {
-            state.scheduler->Rotate(false);
-            kernel::Scheduler::YieldPending = false;
-            state.scheduler->WaitSchedule();
-        }
+        lastSwi = swi;
+        HaltExecution(HaltReason::Svc);
     }
 
     void Jit32::ExceptionRaised(u32 pc, Dynarmic::A32::Exception exception) {

@@ -254,7 +254,7 @@ namespace skyline::kernel::svc {
     void SignalToAddress(const DeviceState &state, SvcContext &ctx);
 
     /**
-     * @brief A per-SVC descriptor with it's name and a function pointer
+     * @brief A per-SVC descriptor with its name and a function pointer
      * @note The descriptor is nullable, the validity of the descriptor can be checked with the boolean operator
      */
     struct SvcDescriptor {
@@ -267,7 +267,7 @@ namespace skyline::kernel::svc {
     };
 
     /**
-     * @brief The SVC table
+     * @brief The SVC table that maps all SVCs to their corresponding functions
      */
     extern const std::array<SvcDescriptor, 0x80> SvcTable;
 }

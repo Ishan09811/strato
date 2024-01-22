@@ -115,7 +115,7 @@ namespace skyline {
                 std::unique_lock lock(handleMutex);
 
                 std::shared_ptr<objectClass> item;
-                if constexpr (std::is_same<objectClass, KThread>())
+                if constexpr (std::is_base_of<KThread, objectClass>())
                     item = std::make_shared<objectClass>(state, constant::BaseHandleIndex + handles.size(), args...);
                 else
                     item = std::make_shared<objectClass>(state, args...);

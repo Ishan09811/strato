@@ -6,7 +6,7 @@
 #include <common.h>
 #include <dynarmic/interface/A32/a32.h>
 #include <kernel/svc_context.h>
-#include "thread_context.h"
+#include "thread_context32.h"
 #include "halt_reason.h"
 
 namespace skyline::jit {
@@ -15,8 +15,9 @@ namespace skyline::jit {
      */
     class Jit32 : public Dynarmic::A32::UserCallbacks {
       private:
-        DeviceState &state;
-        u32 core_id;
+        const DeviceState &state;
+        u32 coreId;
+        u32 lastSwi{};
 
         Dynarmic::A32::Jit jit;
 
@@ -28,7 +29,7 @@ namespace skyline::jit {
         Dynarmic::A32::Jit MakeJit();
 
       public:
-        Jit32(DeviceState &state, u32 core_id);
+        Jit32(const DeviceState &state, u32 coreId);
 
         /**
          * @brief Runs the JIT
@@ -69,12 +70,12 @@ namespace skyline::jit {
         /**
          * @brief Sets the Thread Pointer register to the specified value
          */
-        void SetThreadPointer(u32 thread_ptr);
+        void SetThreadPointer(u32 threadPtr);
 
         /**
          * @brief Sets the Thread Local Storage Pointer register to the specified value
          */
-        void SetTlsPointer(u32 tls_ptr);
+        void SetTlsPointer(u32 tlsPtr);
 
         /**
          * @brief Gets the Program Counter
@@ -106,6 +107,12 @@ namespace skyline::jit {
          */
         void SetRegister(u32 reg, u32 value);
 
+        /**
+         * @brief Handles an SVC call from the JIT
+         * @param swi The SVC number
+         */
+        void SvcHandler(u32 swi);
+
         // Dynarmic callbacks
       public:
         // @fmt:off
@@ -120,7 +127,7 @@ namespace skyline::jit {
         void MemoryWrite64(u32 vaddr, u64 value) override;
         // @fmt:on
 
-        void InterpreterFallback(u32 pc, size_t num_instructions) override;
+        void InterpreterFallback(u32 pc, size_t numInstructions) override;
 
         void CallSVC(u32 swi) override;
 
