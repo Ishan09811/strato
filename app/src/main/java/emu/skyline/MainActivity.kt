@@ -47,6 +47,7 @@ import emu.skyline.utils.WindowInsetsHelper
 import java.util.Collections
 import javax.inject.Inject
 import kotlin.math.ceil
+import com.google.android.material.R as MaterialR
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
