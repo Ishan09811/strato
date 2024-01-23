@@ -16,7 +16,6 @@
         android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
-        android:hasFragileUserData="${shouldSaveUserData}"
         android:icon="@drawable/logo_skyline"
         android:isGame="true"
         android:label="${appLabel}"
