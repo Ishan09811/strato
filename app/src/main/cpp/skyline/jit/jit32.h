@@ -38,7 +38,7 @@ namespace skyline::jit {
         void Run();
 
         /**
-         * @brief Stops the JIT by setting a halt flag
+         * @brief Stops execution by setting the given halt flag
          */
         void HaltExecution(HaltReason hr);
 

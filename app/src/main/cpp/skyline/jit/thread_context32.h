@@ -7,6 +7,8 @@
 #include <kernel/svc_context.h>
 
 namespace skyline::jit {
+    class Jit32; // Forward declaration
+
     /**
      * @brief The register context of a thread running in 32-bit mode
      */
