@@ -31,6 +31,11 @@ namespace skyline {
 
           protected:
             /**
+             * @brief Initializes the thread's execution-mode-specific host object
+             */
+            virtual void Init() = 0;
+
+            /**
              * @brief Runs this thread's guest code
              */
             virtual void Run() = 0;
@@ -84,6 +89,8 @@ namespace skyline {
             bool isPaused{false}; //!< If the thread is currently paused and not runnable
             bool insertThreadOnResume{false}; //!< If the thread should be inserted into the scheduler when it resumes (used for pausing threads during sleep/sync)
 
+            static thread_local inline jit::Jit32 *jit{nullptr}; //!< The JIT core this thread is running on, or nullptr if it's not currently running
+
             KThread(const DeviceState &state, KHandle handle, KProcess *parent, size_t id, void *entry, u64 argument, void *stackTop, i8 priority, u8 idealCore);
 
             virtual ~KThread();
@@ -132,7 +139,13 @@ namespace skyline {
 
         class KNceThread : public KThread {
             /**
+             * @brief Initialises the thread object for execution in NCE mode
+             */
+            void Init() override;
+
+            /**
              * @brief Entry function for any guest thread when running in NCE mode
+             * @note This function does not return as it jumps into guest code
              */
             void Run() override;
 
@@ -143,6 +156,11 @@ namespace skyline {
         };
 
         class KJit32Thread : public KThread {
+            /**
+             * @brief Initialises the thread object for execution in 32-bit JIT mode
+             */
+            void Init() override;
+
             /**
              * @brief Entry function for any guest thread when running in 32-bit JIT mode
              */

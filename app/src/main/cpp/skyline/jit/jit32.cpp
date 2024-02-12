@@ -25,10 +25,13 @@ namespace skyline::jit {
         ClearHalt(haltReason);
 
         switch (haltReason) {
-            case HaltReason::Svc: {
+            case HaltReason::Svc:
                 SvcHandler(lastSwi);
                 break;
-            }
+
+            case HaltReason::Preempted:
+                state.thread->isPreempted = false;
+                return;
 
             default:
                 LOGE("JIT halted: {}", to_string(haltReason));

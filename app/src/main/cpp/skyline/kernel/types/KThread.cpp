@@ -80,19 +80,25 @@ namespace skyline::kernel::type {
         if (timer_create(CLOCK_THREAD_CPUTIME_ID, &event, &preemptionTimer))
             throw exception("timer_create has failed with '{}'", strerror(errno));
 
+        // Initialise execution-mode-specific stuff
+        Init();
+
         try {
             if (!Scheduler::YieldPending)
                 state.scheduler->WaitSchedule();
-            while (Scheduler::YieldPending) {
-                // If there is a yield pending on us after thread creation
-                state.scheduler->Rotate();
-                Scheduler::YieldPending = false;
-                state.scheduler->WaitSchedule();
+
+            while (!killed) {
+                while (Scheduler::YieldPending) [[unlikely]] {
+                    // If there is a yield pending on us after thread creation
+                    state.scheduler->Rotate();
+                    Scheduler::YieldPending = false;
+                    state.scheduler->WaitSchedule();
+                }
+
+                TRACE_EVENT("guest", "Guest");
+                // Run the guest code
+                Run();
             }
-
-            TRACE_EVENT_BEGIN("guest", "Guest");
-
-            Run();
         } catch (const std::exception &e) {
             LOGE("{}", e.what());
             if (id) {
@@ -249,16 +255,18 @@ namespace skyline::kernel::type {
         }
     }
 
-    void KNceThread::Run() {
+    void KNceThread::Init() {
         ctx.tpidrroEl0 = tlsRegion;
         ctx.state = &state;
+    }
 
+    void KNceThread::Run() {
         asm volatile(
-            "MRS X0, TPIDR_EL0\n\t"
+            "MRS X0, TPIDR_EL0\n\t" // Retrieve current (host) TLS
             "MSR TPIDR_EL0, %x0\n\t" // Set TLS to ThreadContext
-            "STR X0, [%x0, #0x2A0]\n\t" // Write ThreadContext::hostTpidrEl0
-            "MOV X0, SP\n\t"
-            "STR X0, [%x0, #0x2A8]\n\t" // Write ThreadContext::hostSp
+            "STR X0, [%x0, #0x2A0]\n\t" // Write host TLS to ThreadContext::hostTpidrEl0
+            "MOV X0, SP\n\t" // Load the current (host) stack pointer
+            "STR X0, [%x0, #0x2A8]\n\t" // Write host SP to ThreadContext::hostSp
             "MOV SP, %x1\n\t" // Replace SP with guest stack
             "MOV LR, %x2\n\t" // Store entry in Link Register so it's jumped to on return
             "MOV X0, %x3\n\t" // Store the argument in X0
@@ -335,16 +343,24 @@ namespace skyline::kernel::type {
         __builtin_unreachable();
     }
 
-    void KJit32Thread::Run() {
+    void KJit32Thread::Init() {
         ctx.gpr[0] = static_cast<u32>(entryArgument);
         ctx.gpr[1] = handle;
 
         ctx.sp = static_cast<u32>(reinterpret_cast<uintptr_t>(stackTop));
         ctx.pc = static_cast<u32>(reinterpret_cast<uintptr_t>(entry));
+    }
 
-        auto &jit{state.cpu->jitCores[coreId]};
-        jit.RestoreContext(ctx);
-        jit.SetTlsPointer(static_cast<u32>(reinterpret_cast<uintptr_t>(tlsRegion)));
-        jit.Run();
+    void KJit32Thread::Run() {
+        jit = &state.cpu->jitCores[coreId];
+
+        jit->RestoreContext(ctx);
+        jit->SetThreadPointer(0); // TODO: see if this is necessary at all
+        jit->SetTlsPointer(static_cast<u32>(reinterpret_cast<uintptr_t>(tlsRegion)));
+
+        jit->Run();
+
+        jit->SaveContext(ctx);
+        jit = nullptr;
     }
 }
