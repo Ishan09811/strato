@@ -331,8 +331,11 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback, View.OnTo
             binding.onScreenControllerToggle.setOnApplyWindowInsetsListener(insetsOrMarginHandler)
         }
 
-        pictureInPictureParamsBuilder = getPictureInPictureBuilder()
-        setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+        if (emulationSettings.pictureInPicture) {
+            val pictureInPictureParamsBuilder = getPictureInPictureBuilder()
+            setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+        }
+
 
         binding.gameView.holder.addCallback(this)
 
@@ -465,7 +468,6 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback, View.OnTo
     }
 
     private fun getPictureInPictureBuilder() : PictureInPictureParams.Builder {
-        if(emulationSettings.pictureInPicture) {
         val pictureInPictureParamsBuilder = PictureInPictureParams.Builder()
 
         val pictureInPictureActions : MutableList<RemoteAction> = mutableListOf()
@@ -489,8 +491,6 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback, View.OnTo
 
         return pictureInPictureParamsBuilder
     }
-   return null
- }
 
     private var pictureInPictureReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent) {
