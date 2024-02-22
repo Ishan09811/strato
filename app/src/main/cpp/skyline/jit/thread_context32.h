@@ -24,9 +24,12 @@ namespace skyline::jit {
         };
         u32 cpsr{0}; //!< Current program status register
         u32 pad{0};
-        std::array<u32, 64> fpr{}; //!< Floating point and vector registers
+        union {
+            std::array<u32, 64> fpr{}; //!< Floating point and vector registers
+            std::array<u64, 32> fpr_d; //!< Floating point and vector registers as double words
+        };
         u32 fpscr{0}; //!< Floating point status and control register
-        u32 tpidr{0}; //!< Thread ID register (currently unused)
+        u32 tpidr{0}; //!< Thread ID register
     };
     static_assert(sizeof(ThreadContext32) == 0x150, "ThreadContext32 should be 336 bytes in size to match HOS");
 
