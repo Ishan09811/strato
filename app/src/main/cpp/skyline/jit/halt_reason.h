@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2023 Strato Team and Contributors (https://github.com/strato-emu/)
 
 #pragma once

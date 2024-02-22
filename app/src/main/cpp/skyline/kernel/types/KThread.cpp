@@ -6,7 +6,7 @@
 #include <common/signal.h>
 #include <common/trace.h>
 #include <nce.h>
-#include <cpu.h>
+#include "jit/jit32.h"
 #include <os.h>
 #include "KProcess.h"
 #include "KThread.h"
@@ -352,7 +352,7 @@ namespace skyline::kernel::type {
     }
 
     void KJit32Thread::Run() {
-        jit = &state.cpu->jitCores[coreId];
+        jit = &state.jit32->GetCore(coreId);
 
         jit->RestoreContext(ctx);
         jit->SetThreadPointer(0); // TODO: see if this is necessary at all
