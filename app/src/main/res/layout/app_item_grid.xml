@@ -9,8 +9,7 @@
 	android:layout_height="wrap_content" 
 	android:layout_marginLeft="15.0dip" 
 	android:layout_marginTop="15.0dip" 
-	android:foreground="@drawable/rounded_selectable_item_background" 
-	android:elevation="20.0dip">
+	android:foreground="@drawable/rounded_selectable_item_background">
 	<com.google.android.material.card.MaterialCardView 
 		android:id="@id/item_card" 
 		android:layout_width="fill_parent" 
