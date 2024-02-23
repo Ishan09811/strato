@@ -5,7 +5,7 @@
 #include <common/signal.h>
 #include <common/trace.h>
 #include <jit/halt_reason.h>
-#include <jit/jit32.h>
+#include <jit/jit_core_32.h>
 #include "types/KThread.h"
 #include "types/KProcess.h"
 #include "scheduler.h"

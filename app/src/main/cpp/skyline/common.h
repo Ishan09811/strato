@@ -28,10 +28,10 @@ namespace skyline {
         class NCE;
         struct ThreadContext;
     }
-    class JvmManager;
-    namespace cpu {
-        class CPU;
+    namespace jit {
+        class Jit32;
     }
+    class JvmManager;
     namespace gpu {
         class GPU;
     }
@@ -68,12 +68,10 @@ namespace skyline {
         std::shared_ptr<JvmManager> jvm;
         std::shared_ptr<Settings> settings;
         std::shared_ptr<loader::Loader> loader;
-        std::vector<std::shared_ptr<loader::Loader>> dlcLoaders;
-        std::shared_ptr<loader::Loader> updateLoader;
         std::shared_ptr<nce::NCE> nce;
+        std::shared_ptr<jit::Jit32> jit32;
         std::shared_ptr<kernel::type::KProcess> process{};
         static thread_local inline std::shared_ptr<kernel::type::KThread> thread{}; //!< The KThread of the thread which accesses this object
-        std::shared_ptr<cpu::CPU> cpu;
         std::shared_ptr<gpu::GPU> gpu;
         std::shared_ptr<soc::SOC> soc;
         std::shared_ptr<audio::Audio> audio;

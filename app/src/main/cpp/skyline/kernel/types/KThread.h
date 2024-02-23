@@ -89,7 +89,7 @@ namespace skyline {
             bool isPaused{false}; //!< If the thread is currently paused and not runnable
             bool insertThreadOnResume{false}; //!< If the thread should be inserted into the scheduler when it resumes (used for pausing threads during sleep/sync)
 
-            static thread_local inline jit::Jit32 *jit{nullptr}; //!< The JIT core this thread is running on, or nullptr if it's not currently running
+            static thread_local inline jit::JitCore32 *jit{nullptr}; //!< The JIT core this thread is running on, or nullptr if it's not currently running
 
             KThread(const DeviceState &state, KHandle handle, KProcess *parent, size_t id, void *entry, u64 argument, void *stackTop, i8 priority, u8 idealCore);
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2023 Strato Team and Contributors (https://github.com/strato-emu/)
 
 #pragma once
@@ -7,7 +7,7 @@
 #include <kernel/svc_context.h>
 
 namespace skyline::jit {
-    class Jit32; // Forward declaration
+    class JitCore32; // Forward declaration
 
     /**
      * @brief The register context of a thread running in 32-bit mode
