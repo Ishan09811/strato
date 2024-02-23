@@ -142,7 +142,7 @@
         <androidx.cardview.widget.CardView 
             android:orientation="vertical" 
             android:id="@+id/cardview1" 
-            android:background="#00ffffff" 
+            android:background="@color/cardview_androidx_color" 
             android:padding="8.0dip" 
             android:layout_width="fill_parent" 
             android:layout_height="fill_parent" 
