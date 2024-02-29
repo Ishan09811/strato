@@ -3,7 +3,7 @@
  * Copyright © 2024 Strato Team and Contributors (https://github.com/strato-emu/)
  */
 
-package org.stratoemu.strato.utils
+package emu.skyline.utils
 
 import emu.skyline.SkylineApplication
 import emu.skyline.getPublicFilesDir
