@@ -1249,8 +1249,8 @@ namespace skyline::kernel::svc {
                     context.vreg[i] = targetContext.fpr_d[i];
                 }
 
-                context.fpsr |= targetContext.fpscr & FpsrMask;
-                context.fpcr |= targetContext.fpscr & FpcrMask;
+                context.fpsr = targetContext.fpscr & FpsrMask;
+                context.fpcr = targetContext.fpscr & FpcrMask;
                 context.tpidr = targetContext.tpidr;
             }
 
