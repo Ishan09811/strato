@@ -12,7 +12,7 @@ import java.io.File
 class CacheManagementUtils {
 
     companion object {
-        private val cacheFolderRoot by lazy { "${StratoApplication.instance.getPublicFilesDir().canonicalPath}/graphics_pipeline_cache/" }
+        private val cacheFolderRoot by lazy { "${SkylineApplication.instance.getPublicFilesDir().canonicalPath}/graphics_pipeline_cache/" }
 
         fun pipelineCacheExists(titleId: String) : Boolean {
             val cacheFolderPath = cacheFolderRoot + titleId
