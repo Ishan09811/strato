@@ -129,8 +129,8 @@ class AppDialog : BottomSheetDialogFragment() {
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.delete_save_confirmation_message))
                 .setMessage(getString(R.string.action_irreversible))
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
                     SaveManagementUtils.deleteSaveFile(item.titleId)
                     binding.deleteSave.isEnabled = false
                     binding.exportSave.isEnabled = false
@@ -144,8 +144,8 @@ class AppDialog : BottomSheetDialogFragment() {
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.delete_shader_cache_confirmation_message))
                 .setMessage(getString(R.string.action_irreversible))
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
                     if(CacheManagementUtils.deleteCacheFile(item.titleId!!)) {
                         binding.cacheDelete.isEnabled = false
                     }
