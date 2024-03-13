@@ -49,17 +49,19 @@ class FirmwareImportPreference @JvmOverloads constructor(context : Context, attr
                     ZipUtils.unzip(inputZip, cacheFirmwareDir)
 
                     val firmware = isFirmwareValid(cacheFirmwareDir)
-                    messageToShow = if (!firmware.valid) {
-                        R.string.import_firmware_invalid_contents
-                    } else {
-                        firmwarePath.deleteRecursively()
-                        cacheFirmwareDir.copyRecursively(firmwarePath, true)
-                        persistString(firmware.version)
-                        extractFonts(firmwarePath.path, keysPath, fontsPath)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            notifyChanged()
+                    messageToShow = when (firmware.status) {
+                        FirmwareStatus.INVALID -> R.string.import_firmware_invalid_contents
+                        FirmwareStatus.KEYS_OUTDATED -> R.string.import_firmware_outdated_keys
+                        else -> {
+                            firmwarePath.deleteRecursively()
+                            cacheFirmwareDir.copyRecursively(firmwarePath, true)
+                            persistString(firmware.version)
+                            extractFonts(firmwarePath.path, keysPath, fontsPath)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                notifyChanged()
+                            }
+                            R.string.import_firmware_success
                         }
-                        R.string.import_firmware_success
                     }
                 } catch (e : IOException) {
                     messageToShow = R.string.error
@@ -104,8 +106,12 @@ class FirmwareImportPreference @JvmOverloads constructor(context : Context, attr
 
         return if (unfilteredNumOfFiles == filteredNumOfFiles) {
             val version = fetchFirmwareVersion(cacheFirmwareDir.path, keysPath)
-            Firmware(version.isNotEmpty(), version)
-        } else Firmware(false, "")
+            when {
+                version.isEmpty() -> Firmware(FirmwareStatus.INVALID, null)
+                version == "-1" -> Firmware(FirmwareStatus.KEYS_OUTDATED, null)
+                else -> Firmware(FirmwareStatus.VALID, version)
+            }
+        } else Firmware(FirmwareStatus.INVALID, null)
     }
 
     private external fun fetchFirmwareVersion(systemArchivesPath : String, keysPath : String) : String
