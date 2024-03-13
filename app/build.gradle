@@ -25,21 +25,16 @@ android {
         minSdk 29
         targetSdk 34
 
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 1
+        versionName "1.2.0"
 
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters "arm64-v8a"
         }
 
-        if (isBuildSigned)
-            manifestPlaceholders += [shouldSaveUserData: "true"]
-        else
-            manifestPlaceholders += [shouldSaveUserData: "false"]
-
-        // Only enable separate process for release builds
-        manifestPlaceholders += [emulationProcess: ""]
+        // Disable the use of a separate process for emulation by default
+        manifestPlaceholders["emulationProcess"] = ""
 
         def locales = ["en", "de", "el", "es", "es-419", "fr", "hu", "id", "it", "ja", "ko", "pl", "ru", "ta", "zh-Hans", "zh-Hant"]
 
@@ -85,7 +80,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig = isBuildSigned ? signingConfigs.ci : signingConfigs.debug
-            manifestPlaceholders += [emulationProcess: ":emulationProcess"]
+            manifestPlaceholders["emulationProcess"] = ":emulationProcess"
         }
 
         reldebug {
@@ -168,14 +163,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.activity:activity-ktx:1.8.0'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.window:window:1.1.0'
+    implementation 'androidx.window:window:1.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
-    implementation 'androidx.fragment:fragment-ktx:1.6.1'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'

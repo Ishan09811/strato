@@ -331,8 +331,11 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback, View.OnTo
             binding.onScreenControllerToggle.setOnApplyWindowInsetsListener(insetsOrMarginHandler)
         }
 
-        pictureInPictureParamsBuilder = getPictureInPictureBuilder()
-        setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+        if (emulationSettings.pictureInPicture) {
+            val pictureInPictureParamsBuilder = getPictureInPictureBuilder()
+            setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+        }
+
 
         binding.gameView.holder.addCallback(this)
 
