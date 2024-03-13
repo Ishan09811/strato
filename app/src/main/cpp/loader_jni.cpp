@@ -112,7 +112,7 @@ extern "C" JNIEXPORT jstring Java_emu_skyline_preference_FirmwareImportPreferenc
             std::shared_ptr<skyline::vfs::Backing> backing{systemArchivesFileSystem->OpenFile(entry.name)};
             auto nca{skyline::vfs::NCA(backing, keyStore)};
 
-            if (nca.header.programId == systemVersionProgramId && nca.romFs != nullptr) {
+            if (nca.header.titleId == systemVersionProgramId && nca.romFs != nullptr) {
                 auto controlRomFs{std::make_shared<skyline::vfs::RomFileSystem>(nca.romFs)};
                 auto file{controlRomFs->OpenFile("file")};
                 SystemVersion systemVersion;
