@@ -40,9 +40,6 @@
 [submodule "Sirit"]
 	path = app/libraries/sirit
 	url = https://github.com/GPUCode/sirit-1
-[submodule "Shader Compiler"]
-	path = app/libraries/shader-compiler
-	url = https://github.com/Ishan09811/shader-compiler.git
 [submodule "libadrenotools"]
 	path = app/libraries/adrenotools
 	url = https://github.com/bylaws/libadrenotools/
@@ -61,3 +58,6 @@
 [submodule "Dynarmic"]
 	path = app/libraries/dynarmic
 	url = https://github.com/strato-emu/dynarmic.git
+[submodule "app/libraries/shader-compiler"]
+	path = app/libraries/shader-compiler
+	url = https://github.com/Ishan09811/shader-compiler
