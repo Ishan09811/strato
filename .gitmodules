@@ -49,9 +49,6 @@
 [submodule "app/libraries/cubeb"]
 	path = app/libraries/cubeb
 	url = https://github.com/skyline-emu/cubeb
-[submodule "app/libraries/audio-core"]
-	path = app/libraries/audio-core
-	url = https://github.com/skyline-emu/audio-core
 [submodule "Dynarmic"]
 	path = app/libraries/dynarmic
 	url = https://github.com/strato-emu/dynarmic.git
@@ -61,3 +58,6 @@
 [submodule "Sirit"]
 	path = app/libraries/sirit
 	url = https://github.com/Ishan09811/sirit
+[submodule "app/libraries/audio-core"]
+	path = app/libraries/audio-core
+	url = https://github.com/Ishan09811/audio-core
