@@ -118,4 +118,10 @@
         <item>Mars</item>
         <item>Jessica Plants (jersker)</item>
     </string-array>
+    <string-array name="audio_output_engine">
+        <item>Auto</item>
+    </string-array>
+    <integer-array name="audio_output_engine_val">
+        <item>0</item> <!-- Auto -->
+    </integer-array>
 </resources>
