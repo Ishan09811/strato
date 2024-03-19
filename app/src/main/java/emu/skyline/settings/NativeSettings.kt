@@ -71,7 +71,7 @@ data class NativeSettings(
         pref.enableFastReadbackWrites,
         pref.disableSubgroupShuffle,
         pref.logLevel,
-        pref.audioOutputEngine
+        pref.audioOutputEngine,
         BuildConfig.BUILD_TYPE != "release" && pref.validationLayer
     )
 
