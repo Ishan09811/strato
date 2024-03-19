@@ -13,7 +13,7 @@ namespace skyline {
      */
     class AndroidSettings final : public Settings {
       private:
-        int audioOutputEngineValue;
+        int audioOutputEngine;
         KtSettings ktSettings;
 
       public:
@@ -52,13 +52,13 @@ namespace skyline {
             enableFastReadbackWrites = ktSettings.GetBool("enableFastReadbackWrites");
             disableSubgroupShuffle = ktSettings.GetBool("disableSubgroupShuffle");
             isAudioOutputDisabled = ktSettings.GetBool("isAudioOutputDisabled");
-            audioOutputEngineValue = ktSettings.GetInt<int>("audioOutputEngine");
+            audioOutputEngine = ktSettings.GetInt<int>("audioOutputEngine");
             logLevel = ktSettings.GetInt<skyline::AsyncLogger::LogLevel>("logLevel");
             validationLayer = ktSettings.GetBool("validationLayer");
         };
 
         int GetAudioOutputEngineValue() const {
-            return audioOutputEngineValue;
+            return audioOutputEngine;
         }
     };
 }
