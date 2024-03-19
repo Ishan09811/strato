@@ -25,6 +25,7 @@ data class NativeSettings(
     var isInternetEnabled : Boolean,
 
     // Audio
+    var audioOutputEngine : Int,
     var isAudioOutputDisabled : Boolean,
 
     // GPU
@@ -70,6 +71,7 @@ data class NativeSettings(
         pref.enableFastReadbackWrites,
         pref.disableSubgroupShuffle,
         pref.logLevel,
+        pref.audioOutputEngine
         BuildConfig.BUILD_TYPE != "release" && pref.validationLayer
     )
 
