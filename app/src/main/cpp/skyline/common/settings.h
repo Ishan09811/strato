@@ -88,6 +88,7 @@ namespace skyline {
         Setting<bool> disableSubgroupShuffle; //!< If shader subgroup suffle operations should be ignored
 
         // Audio
+        Setting<int> audioOutputEngine;
         Setting<bool> isAudioOutputDisabled; //!< Disables audio output
 
         // Debug
