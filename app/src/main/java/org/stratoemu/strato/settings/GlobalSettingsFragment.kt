@@ -20,6 +20,7 @@ import org.stratoemu.strato.MainActivity
 import org.stratoemu.strato.R
 import org.stratoemu.strato.utils.GpuDriverHelper
 import org.stratoemu.strato.utils.WindowInsetsHelper
+import org.stratoemu.strato.StratoApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,9 +46,10 @@ class GlobalSettingsFragment : PreferenceFragmentCompat() {
         addPreferencesFromResource(R.xml.credits_preferences)
 
         // Re-launch the app if Material You is toggled
-        findPreference<Preference>("use_material_you")?.setOnPreferenceChangeListener { _, _ ->
-            requireActivity().finishAffinity()
-            startActivity(Intent(requireContext(), MainActivity::class.java))
+        findPreference<Preference>("use_material_you")?.setOnPreferenceChangeListener { _, newValue ->
+            val isMaterialYouEnabled = newValue as Boolean
+            StratoApplication.setTheme(isMaterialYouEnabled)
+            requireActivity().recreate()
             true
         }
 
