@@ -25,6 +25,9 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.stratoemu.strato.adapter.*
@@ -42,6 +45,7 @@ import org.stratoemu.strato.utils.WindowInsetsHelper
 import javax.inject.Inject
 import kotlin.math.ceil
 import com.google.android.material.R as MaterialR
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -151,6 +155,15 @@ class MainActivity : AppCompatActivity() {
 
         window.decorView.findViewById<View>(android.R.id.content).viewTreeObserver.addOnTouchModeChangeListener { isInTouchMode ->
             refreshIconVisible = !isInTouchMode
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                StratoApplication.themeChangeFlow.collect { themeId ->
+                    setTheme(themeId)
+                    recreate()
+                }
+            }
         }
     }
 

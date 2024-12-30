@@ -22,6 +22,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.forEach
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.internal.ToolbarUtils
 import org.stratoemu.strato.BuildConfig
@@ -33,6 +36,8 @@ import org.stratoemu.strato.preference.dialog.EditTextPreferenceMaterialDialogFr
 import org.stratoemu.strato.preference.dialog.IntegerListPreferenceMaterialDialogFragmentCompat
 import org.stratoemu.strato.preference.dialog.ListPreferenceMaterialDialogFragmentCompat
 import org.stratoemu.strato.utils.WindowInsetsHelper
+import org.stratoemu.strato.StratoApplication
+import kotlinx.coroutines.launch
 
 private const val PREFERENCE_DIALOG_FRAGMENT_TAG = "androidx.preference.PreferenceFragment.DIALOG"
 
@@ -122,6 +127,15 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 .beginTransaction()
                 .replace(R.id.settings, preferenceFragment)
                 .commit()
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                StratoApplication.themeChangeFlow.collect { themeId ->
+                    setTheme(themeId)
+                    recreate()
+                }
+            }
         }
     }
 
