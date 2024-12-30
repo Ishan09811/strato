@@ -7,6 +7,7 @@ package org.stratoemu.strato.settings
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import android.view.View
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -73,11 +74,23 @@ class GlobalSettingsFragment : PreferenceFragmentCompat() {
         if (BuildConfig.BUILD_TYPE != "release")
             findPreference<Preference>("validation_layer")?.isVisible = true
 
-        if (!GpuDriverHelper.supportsForceMaxGpuClocks()) {
-            val forceMaxGpuClocksPref = findPreference<TwoStatePreference>("force_max_gpu_clocks")!!
-            forceMaxGpuClocksPref.isSelectable = false
-            forceMaxGpuClocksPref.isChecked = false
-            forceMaxGpuClocksPref.summary = context!!.getString(R.string.force_max_gpu_clocks_desc_unsupported)
+        disablePreference("use_material_you", Build.VERSION.SDK_INT < Build.VERSION_CODES.S, null)
+        disablePreference("force_max_gpu_clocks", !GpuDriverHelper.supportsForceMaxGpuClocks(), context!!.getString(R.string.force_max_gpu_clocks_desc_unsupported))
+    }
+
+    private fun disablePreference(
+        preferenceId: String, 
+        isDisabled: Boolean, 
+        disabledSummary: String? = null
+    ) {
+        val preference = findPreference<Preference>(preferenceId)!!
+        preference.isSelectable = !isDisabled
+        preference.isEnabled = !isDisabled
+        if (preference is TwoStatePreference && isDisabled) {
+            preference.isChecked = false
+        }
+        if (isDisabled && disabledSummary != null) {
+            preference.summary = disabledSummary
         }
     }
 }
