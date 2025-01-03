@@ -42,6 +42,7 @@ import org.stratoemu.strato.settings.EmulationSettings
 import org.stratoemu.strato.settings.SettingsActivity
 import org.stratoemu.strato.utils.GpuDriverHelper
 import org.stratoemu.strato.utils.WindowInsetsHelper
+import org.stratoemu.strato.di.getSettings
 import javax.inject.Inject
 import kotlin.math.ceil
 import com.google.android.material.R as MaterialR
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity() {
                 else -> AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
             }
         )
+        setTheme(if (getSettings().useMaterialYou) R.style.AppTheme_MaterialYou else R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         setContentView(binding.root)
@@ -160,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 StratoApplication.themeChangeFlow.collect { themeId ->
-                    setTheme(themeId)
+                    // TODO(Ishan09811): Add more material color themes
                     recreate()
                 }
             }

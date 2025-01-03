@@ -37,6 +37,7 @@ import org.stratoemu.strato.preference.dialog.IntegerListPreferenceMaterialDialo
 import org.stratoemu.strato.preference.dialog.ListPreferenceMaterialDialogFragmentCompat
 import org.stratoemu.strato.utils.WindowInsetsHelper
 import org.stratoemu.strato.StratoApplication
+import org.stratoemu.strato.di.getSettings
 import kotlinx.coroutines.launch
 
 private const val PREFERENCE_DIALOG_FRAGMENT_TAG = "androidx.preference.PreferenceFragment.DIALOG"
@@ -64,6 +65,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
      * This initializes all of the elements in the activity and displays the settings fragment
      */
     override fun onCreate(savedInstanceState : Bundle?) {
+        setTheme(if (getSettings().useMaterialYou) R.style.AppTheme_MaterialYou else R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         setContentView(binding.root)
@@ -132,7 +134,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 StratoApplication.themeChangeFlow.collect { themeId ->
-                    setTheme(themeId)
+                    // TODO(Ishan09811): Add more material color themes
                     recreate()
                 }
             }

@@ -12,6 +12,9 @@ import org.stratoemu.strato.di.getSettings
 import java.io.File
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @return The optimal directory for putting public files inside, this may return a private directory if a public directory cannot be retrieved
@@ -34,11 +37,8 @@ class StratoApplication : Application() {
         val themeChangeFlow = _themeChangeFlow.asSharedFlow()
 
         fun setTheme(newValue: Boolean) {
-            if (newValue) {
-                _themeChangeFlow.tryEmit(R.style.AppTheme_MaterialYou)
-            } else {
-                _themeChangeFlow.tryEmit(R.style.AppTheme)
-            }
+            val newTheme = if (newValue) R.style.AppTheme_MaterialYou else R.style.AppTheme
+            CoroutineScope(Dispatchers.Main).launch { _themeChangeFlow.emit(newTheme) }
         }
     }
 
@@ -46,6 +46,5 @@ class StratoApplication : Application() {
         super.onCreate()
         instance = this
         System.loadLibrary("skyline")
-        setTheme(getSettings().useMaterialYou)
     }
 }

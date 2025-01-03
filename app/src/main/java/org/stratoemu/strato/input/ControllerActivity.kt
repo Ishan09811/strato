@@ -31,6 +31,7 @@ import org.stratoemu.strato.input.dialog.StickDialog
 import org.stratoemu.strato.input.onscreen.OnScreenEditActivity
 import org.stratoemu.strato.settings.AppSettings
 import org.stratoemu.strato.utils.WindowInsetsHelper
+import org.stratoemu.strato.di.getSettings
 import javax.inject.Inject
 
 /**
@@ -174,6 +175,7 @@ class ControllerActivity : AppCompatActivity() {
      * This initializes all of the elements in the activity
      */
     override fun onCreate(state : Bundle?) {
+        setTheme(if (getSettings().useMaterialYou) R.style.AppTheme_MaterialYou else R.style.AppTheme)
         super.onCreate(state)
 
         if (id < 0 || id > 7)

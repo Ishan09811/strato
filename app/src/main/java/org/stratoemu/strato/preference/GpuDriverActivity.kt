@@ -30,6 +30,7 @@ import org.stratoemu.strato.utils.GpuDriverHelper
 import org.stratoemu.strato.utils.GpuDriverInstallResult
 import org.stratoemu.strato.utils.WindowInsetsHelper
 import org.stratoemu.strato.utils.serializable
+import org.stratoemu.strato.di.getSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -125,6 +126,7 @@ class GpuDriverActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState : Bundle?) {
+        setTheme(if (getSettings().useMaterialYou) R.style.AppTheme_MaterialYou else R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         setContentView(binding.root)
