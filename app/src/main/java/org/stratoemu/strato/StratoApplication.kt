@@ -33,7 +33,7 @@ class StratoApplication : Application() {
 
         val context : Context get() = instance.applicationContext
 
-        private val _themeChangeFlow = MutableSharedFlow<Int>(replay = 1)
+        private val _themeChangeFlow = MutableSharedFlow<Int>()
         val themeChangeFlow = _themeChangeFlow.asSharedFlow()
 
         fun setTheme(newValue: Boolean) {
