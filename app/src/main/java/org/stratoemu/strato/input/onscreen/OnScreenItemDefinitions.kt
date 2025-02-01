@@ -26,6 +26,7 @@ import org.stratoemu.strato.utils.add
 import org.stratoemu.strato.utils.multiply
 import kotlin.math.roundToInt
 import com.google.android.material.R as MaterialR
+import org.stratoemu.strato.StratoApplication
 
 open class CircularButton(
     onScreenControllerView : OnScreenControllerView,
@@ -33,7 +34,7 @@ open class CircularButton(
     defaultRelativeX : Float,
     defaultRelativeY : Float,
     defaultRelativeRadiusToX : Float,
-    drawableId : Int = R.drawable.ic_button,
+    drawableId : Int = StratoApplication.context.resources.getIdentifier("ic_button", "drawable", StratoApplication.context.packageName),
     defaultEnabled : Boolean = true
 ) : OnScreenButton(
     onScreenControllerView,
@@ -65,9 +66,9 @@ open class JoystickButton(
     defaultRelativeX,
     defaultRelativeY,
     defaultRelativeRadiusToX,
-    R.drawable.ic_button
+    StratoApplication.context.resources.getIdentifier("ic_button", "drawable", StratoApplication.context.packageName)
 ) {
-    private val innerButton = CircularButton(onScreenControllerView, buttonId, config.relativeX, config.relativeY, defaultRelativeRadiusToX * 0.75f, R.drawable.ic_stick)
+    private val innerButton = CircularButton(onScreenControllerView, buttonId, config.relativeX, config.relativeY, defaultRelativeRadiusToX * 0.75f, StratoApplication.context.resources.getIdentifier("ic_stick", "drawable", StratoApplication.context.packageName))
 
     open var recenterSticks = false
         set(value) {
@@ -275,7 +276,7 @@ open class RectangularButton(
     defaultRelativeY : Float,
     defaultRelativeWidth : Float,
     defaultRelativeHeight : Float,
-    drawableId : Int = R.drawable.ic_rectangular_button,
+    drawableId : Int = StratoApplication.context.resources.getIdentifier("ic_rectangular_button", "drawable", StratoApplication.context.packageName),
     defaultEnabled : Boolean = true
 ) : OnScreenButton(
     onScreenControllerView,
@@ -305,9 +306,9 @@ class TriggerButton(
     defaultRelativeWidth,
     defaultRelativeHeight,
     when (buttonId) {
-        ZL -> R.drawable.ic_trigger_button_left
+        ZL -> StratoApplication.context.resources.getIdentifier("ic_trigger_button_left", "drawable", StratoApplication.context.packageName)
 
-        ZR -> R.drawable.ic_trigger_button_right
+        ZR -> StratoApplication.context.resources.getIdentifier("ic_trigger_button_right", "drawable", StratoApplication.context.packageName)
 
         else -> error("Unsupported trigger button")
     }
